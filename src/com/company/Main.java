@@ -18,14 +18,50 @@ public class Main {
             switch (comm0) {
                 case 1:
                     findUserProcess();
-                    int comm1 = -1;
-                    while (comm1 != 0){
-                        System.out.print("Choose variant: ");
-                        comm1 = in.nextInt();
-                        switch (comm1) {
-                            case 1:
-                                break;
-                            case 2:
+                    if (currentUser.access == 0) {
+                        outputMenu1_1();
+                        int comm1 = -1;
+                        while (comm1 != 0) {
+                            System.out.print("Choose variant: ");
+                            comm1 = in.nextInt();
+                            switch (comm1) {
+                                case 1:
+                                    vote();
+                                    break;
+                                case 2:
+                                    getResults();
+                                    break;
+                                case 0:
+                                    System.out.println("Exiting the account");
+                                    break;
+                                default:
+                                    System.out.println("Entered wrong command");
+                                    break;
+                            }
+                        }
+                    } else {
+                        outputMenu1_2();
+                        int comm1 = -1;
+                        while (comm1 != 0) {
+                            System.out.print("Choose variant: ");
+                            comm1 = in.nextInt();
+                            switch (comm1) {
+                                case 1:
+                                    addVoting();
+                                    break;
+                                case 2:
+                                    addNewCandidate();
+                                    break;
+                                case 3:
+                                    getResults();
+                                    break;
+                                case 0:
+                                    System.out.println("Exiting the account");
+                                    break;
+                                default:
+                                    System.out.println("Entered wrong command");
+                                    break;
+                            }
                         }
                     }
                     break;
@@ -147,9 +183,84 @@ public class Main {
         }
     }
 
-    public static void outputMenu0() {
+    private static void addVoting() {
+        Scanner in = new Scanner(System.in);
+        System.out.print("Enter electing title: ");
+        String title = in.nextLine();
+        currentVoting = new Voting(title, new ArrayList<>());
+    }
+
+    private static void addNewCandidate() {
+        if (currentVoting == null) {
+            Scanner in = new Scanner(System.in);
+            System.out.print("Enter candidate's name: ");
+            String name = in.nextLine();
+            if (!currentVoting.candidates.isEmpty()) {
+                for (Candidate candidate : currentVoting.candidates) {
+                    if (candidate.getName().equals(name)) {
+                        System.out.println("Candidate is already on the list");
+                        return;
+                    }
+                }
+            }
+            currentVoting.candidates.add(new Candidate(name));
+        }
+    }
+
+    private static void vote() {
+        Scanner in = new Scanner(System.in);
+        if (currentUser.lastElection != null && currentUser.lastElection != currentVoting) {
+
+            for (int i = 0; i < currentVoting.candidates.size(); i++) {
+                System.out.println(Integer.toString(i+1) + ". " + currentVoting.candidates.get(i).getName());
+            }
+            System.out.println("0. Vote for none");
+            int choiceDone = -1;
+            while (choiceDone >= 0 && choiceDone <= currentVoting.candidates.size()) {
+                System.out.print("Choose the candidate from the list: ");
+                choiceDone = in.nextInt();
+                if(choiceDone >= 0 && choiceDone <= currentVoting.candidates.size()){
+                    if (choiceDone == 0) {
+                        currentUser.lastElection = currentVoting;
+                    } else {
+                        Candidate votedCandidate = currentVoting.candidates.get(choiceDone - 1);
+                        votedCandidate.addVoice();
+                        currentVoting.candidates.set(choiceDone - 1, votedCandidate);
+                    }
+                }else{
+                    System.out.println("Wrong input!");
+                    choiceDone = -1;
+                }
+            }
+        }
+    }
+
+    private static void getResults() {
+        Scanner in = new Scanner(System.in);
+        if (currentVoting != null && !currentVoting.candidates.isEmpty()) {
+            for (int i = 0; i < currentVoting.candidates.size(); i++) {
+                System.out.println(Integer.toString(i+1) + ". " + currentVoting.candidates.get(i).getName() + ": " +
+                        currentVoting.candidates.get(i).getVoices());
+            }
+        }
+    }
+
+    private static void outputMenu0() {
         System.out.println("1. Login");
         System.out.println("2. Registration");
         System.out.println("0. Exit");
+    }
+
+    private static void outputMenu1_1() {
+        System.out.println("1. Vote");
+        System.out.println("2. Election results");
+        System.out.println("0. Exit account");
+    }
+
+    private static void outputMenu1_2() {
+        System.out.println("1. Add new candidate in the list");
+        System.out.println("2. Hold new elections with candidates list");
+        System.out.println("3. Election results");
+        System.out.println("0. Exit account");
     }
 }

@@ -5,6 +5,7 @@ public class User {
     protected String login;
     protected String password;
     public int access;
+    public Voting lastElection;
 
     public User() {
 
