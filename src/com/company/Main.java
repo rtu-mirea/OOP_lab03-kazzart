@@ -11,19 +11,21 @@ public class Main {
     public static void main(String[] args) {
         int comm0 = -1;
         Scanner in = new Scanner(System.in);
-        outputMenu0();
         while (comm0 != 0) {
+            outputMenu0();
             System.out.print("Choose variant: ");
             comm0 = in.nextInt();
+            System.out.println();
             switch (comm0) {
                 case 1:
                     findUserProcess();
-                    if (currentUser.access == 0) {
-                        outputMenu1_1();
+                    if (currentUser != null && currentUser.access == 0) {
                         int comm1 = -1;
                         while (comm1 != 0) {
+                            outputMenu1_1();
                             System.out.print("Choose variant: ");
                             comm1 = in.nextInt();
+                            System.out.println();
                             switch (comm1) {
                                 case 1:
                                     vote();
@@ -33,18 +35,22 @@ public class Main {
                                     break;
                                 case 0:
                                     System.out.println("Exiting the account");
+                                    System.out.println();
+                                    currentUser = null;
                                     break;
                                 default:
                                     System.out.println("Entered wrong command");
+                                    System.out.println();
                                     break;
                             }
                         }
-                    } else {
-                        outputMenu1_2();
+                    } else if(currentUser != null && currentUser.access == 1) {
                         int comm1 = -1;
                         while (comm1 != 0) {
+                            outputMenu1_2();
                             System.out.print("Choose variant: ");
                             comm1 = in.nextInt();
+                            System.out.println();
                             switch (comm1) {
                                 case 1:
                                     addVoting();
@@ -57,9 +63,12 @@ public class Main {
                                     break;
                                 case 0:
                                     System.out.println("Exiting the account");
+                                    System.out.println();
+                                    currentUser = null;
                                     break;
                                 default:
                                     System.out.println("Entered wrong command");
+                                    System.out.println();
                                     break;
                             }
                         }
@@ -67,7 +76,6 @@ public class Main {
                     break;
                 case 2:
                     addUserProcess();
-                    outputMenu0();
                     break;
                 case 0:
                     System.out.println("Ending the program...");
@@ -120,11 +128,13 @@ public class Main {
                 while (roleN < 1) {
                     System.out.print("Choose your role: ");
                     roleN = in.nextInt();
+                    System.out.println();
                     switch (roleN) {
                         case 1:
                             try {
                                 addUser(name, login, password1, "admin");
                                 System.out.println("New admin registered");
+                                System.out.println();
                                 done = true;
                             } catch (Exception e) {
                                 System.out.println(e.getMessage());
@@ -134,6 +144,7 @@ public class Main {
                             try {
                                 addUser(name, login, password1, "elector");
                                 System.out.println("New elector registered");
+                                System.out.println();
                                 done = true;
                             } catch (Exception e) {
                                 System.out.println(e.getMessage());
@@ -171,12 +182,15 @@ public class Main {
         String login = in.nextLine();
         System.out.print("Enter your password: ");
         String password1 = in.nextLine();
+        System.out.println();
         try {
             currentUser = findUser(login, password1);
             if (currentUser.access == 1) {
                 System.out.println("Logined as admin - " + currentUser.login);
+                System.out.println();
             } else {
                 System.out.println("Logined as elector - " + currentUser.login);
+                System.out.println();
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -185,16 +199,18 @@ public class Main {
 
     private static void addVoting() {
         Scanner in = new Scanner(System.in);
-        System.out.print("Enter electing title: ");
+        System.out.print("Enter elections title: ");
         String title = in.nextLine();
+        System.out.println();
         currentVoting = new Voting(title, new ArrayList<>());
     }
 
     private static void addNewCandidate() {
-        if (currentVoting == null) {
+        if (currentVoting != null) {
             Scanner in = new Scanner(System.in);
             System.out.print("Enter candidate's name: ");
             String name = in.nextLine();
+            System.out.println();
             if (!currentVoting.candidates.isEmpty()) {
                 for (Candidate candidate : currentVoting.candidates) {
                     if (candidate.getName().equals(name)) {
@@ -204,44 +220,60 @@ public class Main {
                 }
             }
             currentVoting.candidates.add(new Candidate(name));
+        } else {
+            System.out.println("There is no any elections right now");
         }
     }
 
     private static void vote() {
         Scanner in = new Scanner(System.in);
-        if (currentUser.lastElection != null && currentUser.lastElection != currentVoting) {
-
-            for (int i = 0; i < currentVoting.candidates.size(); i++) {
-                System.out.println(Integer.toString(i+1) + ". " + currentVoting.candidates.get(i).getName());
-            }
-            System.out.println("0. Vote for none");
-            int choiceDone = -1;
-            while (choiceDone >= 0 && choiceDone <= currentVoting.candidates.size()) {
-                System.out.print("Choose the candidate from the list: ");
-                choiceDone = in.nextInt();
-                if(choiceDone >= 0 && choiceDone <= currentVoting.candidates.size()){
-                    if (choiceDone == 0) {
-                        currentUser.lastElection = currentVoting;
-                    } else {
-                        Candidate votedCandidate = currentVoting.candidates.get(choiceDone - 1);
-                        votedCandidate.addVoice();
-                        currentVoting.candidates.set(choiceDone - 1, votedCandidate);
-                    }
-                }else{
-                    System.out.println("Wrong input!");
-                    choiceDone = -1;
+        if (!currentVoting.candidates.isEmpty()) {
+            if (currentUser.lastElection != currentVoting) {
+                System.out.println("Elections: " + currentVoting.title);
+                for (int i = 0; i < currentVoting.candidates.size(); i++) {
+                    System.out.println(Integer.toString(i + 1) + ". " + currentVoting.candidates.get(i).getName());
                 }
+                System.out.println("0. Vote for none");
+                System.out.println();
+                int choiceDone = -1;
+                while (choiceDone < 0 || choiceDone > currentVoting.candidates.size()) {
+                    System.out.print("Choose the candidate from the list: ");
+                    choiceDone = in.nextInt();
+                    if (choiceDone >= 0 && choiceDone <= currentVoting.candidates.size()) {
+                        if (choiceDone == 0) {
+                            currentUser.lastElection = currentVoting;
+                        } else {
+                            Candidate votedCandidate = currentVoting.candidates.get(choiceDone - 1);
+                            votedCandidate.addVoice();
+                            currentVoting.candidates.set(choiceDone - 1, votedCandidate);
+                            currentUser.lastElection = currentVoting;
+                        }
+                    } else {
+                        System.out.println("Wrong input!");
+                        choiceDone = -1;
+                    }
+                }
+            } else {
+                System.out.println("You cannot vote in this elections anymore");
             }
+        } else {
+            System.out.println("There is no any person in the candidates list");
         }
     }
 
     private static void getResults() {
         Scanner in = new Scanner(System.in);
         if (currentVoting != null && !currentVoting.candidates.isEmpty()) {
+            System.out.println("Elections: " + currentVoting.title);
             for (int i = 0; i < currentVoting.candidates.size(); i++) {
-                System.out.println(Integer.toString(i+1) + ". " + currentVoting.candidates.get(i).getName() + ": " +
+                System.out.println(Integer.toString(i + 1) + ". " + currentVoting.candidates.get(i).getName() + ": " +
                         currentVoting.candidates.get(i).getVoices());
             }
+            System.out.println();
+
+        } else {
+            System.out.println("There is no any person in the candidates list");
+            System.out.println();
         }
     }
 
@@ -258,8 +290,8 @@ public class Main {
     }
 
     private static void outputMenu1_2() {
-        System.out.println("1. Add new candidate in the list");
-        System.out.println("2. Hold new elections with candidates list");
+        System.out.println("1. Hold new elections");
+        System.out.println("2. Add new candidate in the list");
         System.out.println("3. Election results");
         System.out.println("0. Exit account");
     }

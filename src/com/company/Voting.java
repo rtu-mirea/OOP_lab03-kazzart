@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Voting {
-    private String title;
+    public String title;
     public List<Candidate> candidates;
 
     public Voting(String title, List<Candidate> candidates) {
