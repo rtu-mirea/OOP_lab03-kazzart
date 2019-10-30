@@ -5,6 +5,7 @@ public class Elector extends User {
 
     public Elector(String name, String login, String password) {
         super(name, login, password);
+        access = 0;
     }
 
     public boolean isVoted() {

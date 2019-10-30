@@ -4,6 +4,7 @@ public class User {
     protected String name;
     protected String login;
     protected String password;
+    public int access;
 
     public User() {
 
