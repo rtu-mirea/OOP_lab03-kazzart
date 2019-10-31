@@ -239,6 +239,7 @@ public class Main {
                 while (choiceDone < 0 || choiceDone > currentVoting.candidates.size()) {
                     System.out.print("Choose the candidate from the list: ");
                     choiceDone = in.nextInt();
+                    System.out.println();
                     if (choiceDone >= 0 && choiceDone <= currentVoting.candidates.size()) {
                         if (choiceDone == 0) {
                             currentUser.lastElection = currentVoting;
