@@ -9,6 +9,7 @@ public class Main {
     private static Voting currentVoting;
     private static User currentUser;
     public static void main(String[] args) {
+        users.add(new Admin("admin", "admin", "admin"));
         int comm0 = -1;
         Scanner in = new Scanner(System.in);
         while (comm0 != 0) {
@@ -122,38 +123,13 @@ public class Main {
             System.out.print("Enter your password again: ");
             String password2 = in.nextLine();
             if (password1.equals(password2)) {
-                int roleN = 0;
-                System.out.println("1. Admin");
-                System.out.println("2. Elector");
-                while (roleN < 1) {
-                    System.out.print("Choose your role: ");
-                    roleN = in.nextInt();
+                try {
+                    addUser(name, login, password1, "elector");
+                    System.out.println("New elector registered");
                     System.out.println();
-                    switch (roleN) {
-                        case 1:
-                            try {
-                                addUser(name, login, password1, "admin");
-                                System.out.println("New admin registered");
-                                System.out.println();
-                                done = true;
-                            } catch (Exception e) {
-                                System.out.println(e.getMessage());
-                            }
-                            break;
-                        case 2:
-                            try {
-                                addUser(name, login, password1, "elector");
-                                System.out.println("New elector registered");
-                                System.out.println();
-                                done = true;
-                            } catch (Exception e) {
-                                System.out.println(e.getMessage());
-                            }
-                            break;
-                        default:
-                            System.out.println("Entered wrong command");
-                            break;
-                    }
+                    done = true;
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
             } else {
                 System.out.println("Passwords are different");
